@@ -2,12 +2,14 @@ const tmp = require("tmp-promise")
 const path = require("path")
 const fs = require("fs")
 const childProcess = require("child_process")
+const rmfr = require("rmfr")
 
 module.exports = async ({ packageNameOrPath, props }) => {
   const { path: tmpDirPath, cleanup } = await tmp.dir()
 
   childProcess.execSync("npm init -y", {
     shell: true,
+    stdio: "inherit",
     cwd: tmpDirPath,
   })
 
@@ -21,6 +23,7 @@ module.exports = async ({ packageNameOrPath, props }) => {
     `npm install react react-test-renderer ${packageNameOrPath}`,
     {
       shell: true,
+      stdio: "inherit",
       cwd: tmpDirPath,
     }
   )
@@ -64,8 +67,9 @@ console.log(testRenderer.toJSON())
 
   childProcess.execSync(`node test.js`, {
     shell: true,
+    stdio: "inherit",
     cwd: tmpDirPath,
   })
 
-  await cleanup()
+  await rmfr(tmpDirPath)
 }

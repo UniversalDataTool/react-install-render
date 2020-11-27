@@ -1,9 +1,16 @@
 {
   "name": "react-install-render",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "index.js",
   "license": "MIT",
+  "bin": {
+    "react-install-render": "./cli.js"
+  },
+  "scripts": {
+    "test": "./cli.js tests/test-package --props '{\"a\": 1, \"b\": 2}'"
+  },
   "dependencies": {
+    "rmfr": "^2.0.0",
     "tmp": "^0.2.1",
     "tmp-promise": "^3.0.2",
     "yargs": "^16.1.1"
