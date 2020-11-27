@@ -59,6 +59,8 @@ module.exports = async ({ packageNameOrPath, props }) => {
 import TestRenderer from "react-test-renderer"
 import TestComponent from "${packageJSON.name}"
 
+global.window = {}
+
 const testRenderer = TestRenderer.create(TestComponent(${props}))
 
 console.log(testRenderer.toJSON())
