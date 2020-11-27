@@ -8,3 +8,5 @@ const args = yargs(hideBin(process.argv))
   .demandCommand(0)
   .option("props", { describe: "Props to pass to default export" })
   .default("props", {}).argv
+
+console.log(args)
