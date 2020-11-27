@@ -1,6 +1,6 @@
 {
   "name": "react-install-render",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "index.js",
   "license": "MIT",
   "bin": {
@@ -8,6 +8,10 @@
   },
   "scripts": {
     "test": "./cli.js tests/test-package --props '{\"a\": 1, \"b\": 2}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UniversalDataTool/react-install-render.git"
   },
   "dependencies": {
     "rmfr": "^2.0.0",
