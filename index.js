@@ -19,8 +19,10 @@ module.exports = async ({ packageNameOrPath, props }) => {
     packageNameOrPath = path.resolve(packageNameOrPath)
   }
 
+  // TODO run the parcel from the react-install-render node_modules folder instead
+  // of reinstalling parcel on every run
   childProcess.execSync(
-    `npm install react react-test-renderer ${packageNameOrPath}`,
+    `npm install react parcel react-test-renderer ${packageNameOrPath}`,
     {
       shell: true,
       stdio: "inherit",
@@ -54,8 +56,8 @@ module.exports = async ({ packageNameOrPath, props }) => {
     path.resolve(tmpDirPath, "test.js"),
     `
 
-const TestComponent = require("${packageJSON.name}")
-const TestRenderer = require("react-test-renderer")
+import TestRenderer from "react-test-renderer"
+import TestComponent from "${packageJSON.name}"
 
 const testRenderer = TestRenderer.create(TestComponent(${props}))
 
@@ -65,7 +67,13 @@ console.log(testRenderer.toJSON())
     `.trim()
   )
 
-  childProcess.execSync(`node test.js`, {
+  childProcess.execSync(`npx parcel build ./test.js`, {
+    shell: true,
+    stdio: "inherit",
+    cwd: tmpDirPath,
+  })
+
+  childProcess.execSync(`node dist/test.js`, {
     shell: true,
     stdio: "inherit",
     cwd: tmpDirPath,
