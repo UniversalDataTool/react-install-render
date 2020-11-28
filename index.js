@@ -22,7 +22,7 @@ module.exports = async ({ packageNameOrPath, props }) => {
   // TODO run the parcel from the react-install-render node_modules folder instead
   // of reinstalling parcel on every run
   childProcess.execSync(
-    `npm install react parcel react-test-renderer ${packageNameOrPath}`,
+    `npm install react parcel react-test-renderer jsdom jsdom-global jsdom-worker ${packageNameOrPath}`,
     {
       shell: true,
       stdio: "inherit",
@@ -74,29 +74,12 @@ window.runTest = () => {
     cwd: tmpDirPath,
   })
 
-  console.log("Creating", path.resolve(tmpDirPath, "run-packed-with-jsdom.js"))
   fs.writeFileSync(
     path.resolve(tmpDirPath, "run-packed-with-jsdom.js"),
     `
-// As recommended by https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
-const jsdom = require("jsdom");
-const fs = require("fs");
-const { window } = new jsdom.JSDOM("", { runScripts: "dangerously" });
-
-const lib = fs.readFileSync("./dist/test.js", { encoding: "utf-8" });
-const scriptEl = window.document.createElement("script");
-scriptEl.textContent = lib;
-
-window.document.head.appendChild(scriptEl);
-
-scriptEl.onerror = (e) => {
-  console.log(
-    "error loading react element:" +
-      e.toString() +
-      "\\n\\nSince the output has been minified, this is pretty tricky to debug. Try using your React Component manually (with an \\"npm install path/to/your/package\\" on your package). You can always create an issue if you think it's a problem with this module. https://github.com/UniversalDataTool/react-install-render/issues"
-  );
-};
-
+require("global-jsdom")();
+require("jsdom-worker");
+require("./dist/test.js");
 window.runTest();
       `.trim()
   )
