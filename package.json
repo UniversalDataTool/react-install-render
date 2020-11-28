@@ -14,6 +14,7 @@
     "url": "https://github.com/UniversalDataTool/react-install-render.git"
   },
   "dependencies": {
+    "jsdom": "^16.4.0",
     "rmfr": "^2.0.0",
     "tmp": "^0.2.1",
     "tmp-promise": "^3.0.2",

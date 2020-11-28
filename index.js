@@ -55,15 +55,14 @@ module.exports = async ({ packageNameOrPath, props }) => {
   fs.writeFileSync(
     path.resolve(tmpDirPath, "test.js"),
     `
-
 import TestRenderer from "react-test-renderer"
 import TestComponent from "${packageJSON.name}"
 
-global.window = {}
+window.runTest = () => {
+  const testRenderer = TestRenderer.create(TestComponent(${props}))
 
-const testRenderer = TestRenderer.create(TestComponent(${props}))
-
-console.log(testRenderer.toJSON())
+  console.log(testRenderer.toJSON())
+}
 
 
     `.trim()
@@ -75,7 +74,35 @@ console.log(testRenderer.toJSON())
     cwd: tmpDirPath,
   })
 
-  childProcess.execSync(`node dist/test.js`, {
+  console.log("Creating", path.resolve(tmpDirPath, "run-packed-with-jsdom.js"))
+  fs.writeFileSync(
+    path.resolve(tmpDirPath, "run-packed-with-jsdom.js"),
+    `
+// As recommended by https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
+const jsdom = require("jsdom");
+const fs = require("fs");
+const { window } = new jsdom.JSDOM("", { runScripts: "dangerously" });
+
+const lib = fs.readFileSync("./dist/test.js", { encoding: "utf-8" });
+const scriptEl = window.document.createElement("script");
+scriptEl.textContent = lib;
+
+window.document.head.appendChild(scriptEl);
+
+scriptEl.onerror = (e) => {
+  console.log(
+    "error loading react element:" +
+      e.toString() +
+      "\\n\\nSince the output has been minified, this is pretty tricky to debug. Try using your React Component manually (with an \\"npm install path/to/your/package\\" on your package). You can always create an issue if you think it's a problem with this module. https://github.com/UniversalDataTool/react-install-render/issues"
+  );
+};
+
+window.runTest();
+      `.trim()
+  )
+
+  console.log("running ", "node run-packed-with-jsdom.js")
+  childProcess.execSync(`node run-packed-with-jsdom.js`, {
     shell: true,
     stdio: "inherit",
     cwd: tmpDirPath,
