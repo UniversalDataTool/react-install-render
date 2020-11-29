@@ -22,7 +22,7 @@ module.exports = async ({ packageNameOrPath, props }) => {
   // TODO run the parcel from the react-install-render node_modules folder instead
   // of reinstalling parcel on every run
   childProcess.execSync(
-    `npm install react parcel react-test-renderer jsdom jsdom-global jsdom-worker ${packageNameOrPath}`,
+    `npm install --production react parcel react-test-renderer jsdom global-jsdom jsdom-worker node-fetch ${packageNameOrPath}`,
     {
       shell: true,
       stdio: "inherit",
@@ -68,7 +68,7 @@ window.runTest = () => {
     `.trim()
   )
 
-  childProcess.execSync(`npx parcel build ./test.js`, {
+  childProcess.execSync(`npx parcel build --no-minify ./test.js`, {
     shell: true,
     stdio: "inherit",
     cwd: tmpDirPath,
